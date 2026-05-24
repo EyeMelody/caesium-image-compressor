@@ -50,7 +50,8 @@ jobs:
         run: rustup target add x86_64-pc-windows-gnu
 
       - name: Configure CMake
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{env.Qt6_Dir}}" -G "CodeBlocks - MinGW Makefiles" -B ${{github.workspace}}/build-${{ runner.os }}
+        shell: pwsh
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -G "CodeBlocks - MinGW Makefiles" -B ${{github.workspace}}/build-${{ runner.os }}
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build-${{ runner.os }} --config Release --target caesium_image_compressor
@@ -85,7 +86,18 @@ jobs:
           Copy-Item -Path $winSparklePath -Destination (Join-Path $distDir "WinSparkle.dll")
           Copy-Item -Path "${{ github.workspace }}\qt.conf" -Destination (Join-Path $distDir "qt.conf")
 
-          & "${{ env.Qt6_Dir }}\bin\windeployqt.exe" --release --compiler-runtime (Join-Path $distDir "ImageLite.exe")
+          $windeployqt = Get-Command windeployqt.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source
+          if (!$windeployqt -and $env:QT_ROOT_DIR) {
+            $candidate = Join-Path $env:QT_ROOT_DIR "bin\windeployqt.exe"
+            if (Test-Path $candidate) {
+              $windeployqt = $candidate
+            }
+          }
+          if (!$windeployqt) {
+            throw "windeployqt.exe not found. QT_ROOT_DIR='$env:QT_ROOT_DIR'"
+          }
+
+          & $windeployqt --release --compiler-runtime (Join-Path $distDir "ImageLite.exe")
 
           $zipPath = "${{ github.workspace }}\ImageLite-win-portable.zip"
           Compress-Archive -Path (Join-Path $distDir "*") -DestinationPath $zipPath -Force
