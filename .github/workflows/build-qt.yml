@@ -1,5 +1,6 @@
 name: Build
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths-ignore:
@@ -52,6 +53,44 @@ jobs:
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build-${{ runner.os }} --config Release --target caesium_image_compressor
+
+      - name: Package Windows portable app
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $buildDir = "${{ github.workspace }}\build-${{ runner.os }}"
+          $distDir = "${{ github.workspace }}\package\ImageLite-win-portable"
+          New-Item -ItemType Directory -Force -Path $distDir | Out-Null
+
+          $exePath = Join-Path $buildDir "Caesium Image Compressor.exe"
+          $libCaesiumPath = Join-Path $buildDir "libcaesium-prefix\src\libcaesium\target\x86_64-pc-windows-gnu\release\caesium.dll"
+          $winSparklePath = Join-Path $buildDir "libwinsparkle-prefix\src\libwinsparkle\x64\Release\WinSparkle.dll"
+
+          if (!(Test-Path $exePath)) {
+            throw "Application executable not found: $exePath"
+          }
+          if (!(Test-Path $libCaesiumPath)) {
+            throw "libcaesium DLL not found: $libCaesiumPath"
+          }
+          if (!(Test-Path $winSparklePath)) {
+            throw "WinSparkle DLL not found: $winSparklePath"
+          }
+
+          Copy-Item -Path $exePath -Destination (Join-Path $distDir "ImageLite.exe")
+          Copy-Item -Path $libCaesiumPath -Destination (Join-Path $distDir "caesium.dll")
+          Copy-Item -Path $winSparklePath -Destination (Join-Path $distDir "WinSparkle.dll")
+          Copy-Item -Path "${{ github.workspace }}\qt.conf" -Destination (Join-Path $distDir "qt.conf")
+
+          & "${{ env.Qt6_Dir }}\bin\windeployqt.exe" --release --compiler-runtime (Join-Path $distDir "ImageLite.exe")
+
+          $zipPath = "${{ github.workspace }}\ImageLite-win-portable.zip"
+          Compress-Archive -Path (Join-Path $distDir "*") -DestinationPath $zipPath -Force
+
+      - name: Upload Windows portable package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImageLite-win-portable
+          path: ImageLite-win-portable.zip
 
   #  build-macos:
   #    runs-on: macos-latest

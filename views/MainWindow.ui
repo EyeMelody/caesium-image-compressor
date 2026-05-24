@@ -267,7 +267,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string>Size</string>
+                   <string>Target size</string>
                   </property>
                  </item>
                 </widget>
@@ -965,14 +965,14 @@ QScrollArea &gt; QWidget &gt; QScrollBar { background: 1; }</string>
                           <enum>QAbstractSpinBox::StepType::AdaptiveDecimalStepType</enum>
                          </property>
                          <property name="value">
-                          <number>500</number>
+                          <number>2</number>
                          </property>
                         </widget>
                        </item>
                        <item>
                         <widget class="QComboBox" name="maxOutputSizeUnit_ComboBox">
                          <property name="currentIndex">
-                          <number>0</number>
+                          <number>2</number>
                          </property>
                          <item>
                           <property name="text">

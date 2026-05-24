@@ -5,7 +5,7 @@
 QList<CsLocale> LanguageManager::getTranslations()
 {
     QList<CsLocale> translations = {
-        { QString("default"), QString("Default") },
+        { QString("default"), QString("默认") },
         { QString("en_US"), QString("English (US)") },
         { QString("it_IT"), QString("Italiano") },
         { QString("fr_FR"), QString("Français") },
@@ -33,8 +33,14 @@ QList<CsLocale> LanguageManager::getSortedTranslations()
 {
     QList<CsLocale> sortedList = getTranslations();
     std::sort(sortedList.begin(), sortedList.end(), [](const CsLocale& a, const CsLocale& b) {
-        if (a.label == "Default") {
+        if (a.locale == "default" && b.locale == "default") {
+            return false;
+        }
+        if (a.locale == "default") {
             return true;
+        }
+        if (b.locale == "default") {
+            return false;
         }
         return a.label < b.label;
     });
@@ -62,13 +68,13 @@ QString LanguageManager::getLocaleFromPreferences(const QVariant& preference)
     } else if (preference.typeId() == QVariant::String) {
         return preference.toString();
     } else {
-        return "default";
+        return "zh_CN";
     }
 }
 
 void LanguageManager::loadLocale(QTranslator* translator)
 {
-    QString localeId = LanguageManager::getLocaleFromPreferences(QSettings().value("preferences/language/locale", "default"));
+    QString localeId = LanguageManager::getLocaleFromPreferences(QSettings().value("preferences/language/locale", "zh_CN"));
     QLocale locale = QLocale();
     if (localeId != "default") {
         locale = QLocale(localeId);

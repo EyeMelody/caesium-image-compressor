@@ -401,8 +401,8 @@ void MainWindow::readSettings()
     ui->WebPQuality_SpinBox->setValue(QSettings().value("compression_options/compression/webp_quality", 60).toInt());
     ui->TIFFCompressionMethod_ComboBox->setCurrentIndex(QSettings().value("compression_options/compression/tiff_method", 1).toInt());
     ui->TIFFDeflateLevel_Slider->setValue(QSettings().value("compression_options/compression/tiff_deflate_level", 2).toInt());
-    ui->maxOutputSize_SpinBox->setValue(QSettings().value("compression_options/compression/max_output_size", 500).toInt());
-    ui->maxOutputSizeUnit_ComboBox->setCurrentIndex(QSettings().value("compression_options/compression/max_output_size_unit", 0).toInt());
+    ui->maxOutputSize_SpinBox->setValue(QSettings().value("compression_options/compression/max_output_size", 2).toInt());
+    ui->maxOutputSizeUnit_ComboBox->setCurrentIndex(QSettings().value("compression_options/compression/max_output_size_unit", static_cast<int>(MaxOutputSizeUnit::MAX_OUTPUT_MB)).toInt());
 
     ui->fitTo_ComboBox->setCurrentIndex(QSettings().value("compression_options/resize/fit_to", 0).toInt());
     ui->width_SpinBox->setValue(QSettings().value("compression_options/resize/width", 1000).toInt());
@@ -1087,7 +1087,7 @@ void MainWindow::initUpdater()
 #endif
 
 #if defined(Q_OS_WIN) && !defined(IS_PORTABLE)
-    QString locale = LanguageManager::getLocaleFromPreferences(QSettings().value("preferences/language/locale", "default"));
+    QString locale = LanguageManager::getLocaleFromPreferences(QSettings().value("preferences/language/locale", "zh_CN"));
     if (locale != "default") {
         win_sparkle_set_lang(locale.replace('_', '-').toUtf8().constData());
     }

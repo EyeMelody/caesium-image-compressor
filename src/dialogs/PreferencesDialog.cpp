@@ -156,7 +156,7 @@ void PreferencesDialog::onShowUsageDataLinkActivated([[maybe_unused]] const QStr
 // Versions below 2.3.0 use an index on the unsorted list, we need to convert it to the new sorting
 int PreferencesDialog::getLocaleIndex()
 {
-    auto localeConf = QSettings().value("preferences/language/locale", "default");
+    auto localeConf = QSettings().value("preferences/language/locale", "zh_CN");
     int localeIndex = 0;
     if (localeConf.typeId() == QVariant::Int || localeConf.typeId() == QVariant::LongLong) {
         localeIndex = localeConf.toInt();

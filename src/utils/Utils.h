@@ -151,8 +151,8 @@ typedef struct ImagePreview {
 
 constexpr int THEMES_COUNT = 2;
 const CsTheme THEMES[THEMES_COUNT] = {
-    { QString("Native"), QString("Native") },
-    { QString("Fusion"), QString("Fusion") },
+    { QString("Native"), QString("原生") },
+    { QString("Fusion"), QString("融合") },
 };
 
 // Utilities

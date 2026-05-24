@@ -349,6 +349,10 @@ Saved: %4 (%5%)</source>
         <translation>px</translation>
     </message>
     <message>
+        <source>Target size</source>
+        <translation>指定大小</translation>
+    </message>
+    <message>
         <source>Size</source>
         <translation>大小</translation>
     </message>
