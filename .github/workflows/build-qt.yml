@@ -66,7 +66,13 @@ jobs:
 
           $exePath = Get-ChildItem -Path $buildDir -Filter "Caesium Image Compressor.exe" -Recurse -File | Select-Object -First 1 -ExpandProperty FullName
           $libCaesiumPath = Get-ChildItem -Path $buildDir -Filter "caesium.dll" -Recurse -File | Select-Object -First 1 -ExpandProperty FullName
-          $winSparklePath = Get-ChildItem -Path $buildDir -Filter "WinSparkle.dll" -Recurse -File | Select-Object -First 1 -ExpandProperty FullName
+          $winSparklePath = Get-ChildItem -Path $buildDir -Filter "WinSparkle.dll" -Recurse -File |
+            Where-Object { $_.FullName -match "\\x64\\Release\\WinSparkle\.dll$" } |
+            Select-Object -First 1 -ExpandProperty FullName
+          if (!$winSparklePath) {
+            $winSparklePath = Get-ChildItem -Path $buildDir -Filter "WinSparkle.dll" -Recurse -File |
+              Select-Object -First 1 -ExpandProperty FullName
+          }
 
           if (!$exePath) {
             Get-ChildItem -Path $buildDir -Recurse -File | Select-Object -ExpandProperty FullName
