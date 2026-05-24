@@ -63,18 +63,21 @@ jobs:
           $distDir = "${{ github.workspace }}\package\ImageLite-win-portable"
           New-Item -ItemType Directory -Force -Path $distDir | Out-Null
 
-          $exePath = Join-Path $buildDir "Caesium Image Compressor.exe"
-          $libCaesiumPath = Join-Path $buildDir "libcaesium-prefix\src\libcaesium\target\x86_64-pc-windows-gnu\release\caesium.dll"
-          $winSparklePath = Join-Path $buildDir "libwinsparkle-prefix\src\libwinsparkle\x64\Release\WinSparkle.dll"
+          $exePath = Get-ChildItem -Path $buildDir -Filter "Caesium Image Compressor.exe" -Recurse -File | Select-Object -First 1 -ExpandProperty FullName
+          $libCaesiumPath = Get-ChildItem -Path $buildDir -Filter "caesium.dll" -Recurse -File | Select-Object -First 1 -ExpandProperty FullName
+          $winSparklePath = Get-ChildItem -Path $buildDir -Filter "WinSparkle.dll" -Recurse -File | Select-Object -First 1 -ExpandProperty FullName
 
-          if (!(Test-Path $exePath)) {
-            throw "Application executable not found: $exePath"
+          if (!$exePath) {
+            Get-ChildItem -Path $buildDir -Recurse -File | Select-Object -ExpandProperty FullName
+            throw "Application executable not found under $buildDir"
           }
-          if (!(Test-Path $libCaesiumPath)) {
-            throw "libcaesium DLL not found: $libCaesiumPath"
+          if (!$libCaesiumPath) {
+            Get-ChildItem -Path $buildDir -Recurse -File | Select-Object -ExpandProperty FullName
+            throw "libcaesium DLL not found under $buildDir"
           }
-          if (!(Test-Path $winSparklePath)) {
-            throw "WinSparkle DLL not found: $winSparklePath"
+          if (!$winSparklePath) {
+            Get-ChildItem -Path $buildDir -Recurse -File | Select-Object -ExpandProperty FullName
+            throw "WinSparkle DLL not found under $buildDir"
           }
 
           Copy-Item -Path $exePath -Destination (Join-Path $distDir "ImageLite.exe")
