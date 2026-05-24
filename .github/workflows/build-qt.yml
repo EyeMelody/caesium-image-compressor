@@ -1,4 +1,5 @@
 name: Build
+# Builds ImageLite and uploads a Windows portable package.
 on:
   workflow_dispatch:
   push:
